@@ -1,3 +1,5 @@
+
+
 int w = 50;
 int columns, rows;
 
@@ -48,4 +50,71 @@ void setup() {
       // 4 = boş cell 
     }
   }
-  boar
+  board[x][y]=0;
+}
+
+int a = abs (elevation[x][y] - elevation[x-1][y]) ;
+int b = abs (elevation[x][y] - elevation[x+1][y]) ; 
+int c = abs (elevation[x][y] - elevation[x][y-1]) ; 
+int d = abs (elevation[x][y] - elevation[x][y+1]) ;
+
+int[] array = { a, b,c,d};
+
+//sıralasa 
+//newarray = {d, a, b,c,};
+
+
+void draw() {
+  background(255);
+
+println (abs (elevation[x][y] - elevation[x-1][y]));
+println (abs (elevation[x][y] - elevation[x+1][y]));
+println (abs (elevation[x][y] - elevation[x][y-1]));
+println (abs (elevation[x][y] - elevation[x][y+1]));
+println (array);
+//elevation sayı ile gösterilecek
+ /* for ( int i = 0; i < columns; i++) {
+    for ( int j = 0; j < rows; j++) {
+      if (elevation[i][j] == 10)
+      {//yazı 10
+        rect( i*w, j*w, w, w);
+      } 
+      if (elevation[i][j] == 11)
+      {//yazı 11
+        rect( i*w, j*w, w, w);
+      }
+      if (elevation[i][j] == 12)
+      {//yazı 12
+        rect( i*w, j*w, w, w);
+      }
+      if (elevation[i][j] == 13)
+      {//yazı 13
+        rect( i*w, j*w, w, w);
+      }
+      if (elevation[i][j] == 14)
+      {//yazı 14
+        rect( i*w, j*w, w, w);
+      } else 
+      rect( i*w, j*w, w, w);
+      {
+        //yazı 15
+      }
+    }
+  }*/
+  
+  for ( int i = 0; i < columns; i++) {
+    for ( int j = 0; j < rows; j++) {
+      if (board[i][j] == 0)
+      { // boş 
+        fill (0,255,0); 
+        stroke (0);
+        rect( i*w, j*w, w, w);
+      } else 
+      rect( i*w, j*w, w, w);
+      {
+        fill (255); 
+        stroke (0);
+      }
+    }
+  }
+}
