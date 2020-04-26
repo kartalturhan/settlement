@@ -1,0 +1,174 @@
+PImage img;
+PVector vNotBest;
+PVector [] notBest= new PVector[100];
+int w = 20; //column row size
+int columns, rows;
+int[][] board;
+int[][] elevation;
+int p=50;
+int modul=100;
+int x=floor(random(5, 10));
+int y=floor(random(5, 10));
+int c0 = floor((p*8)/modul); //service=4
+int c1 = floor((p*12)/modul); //research=6
+int c2 = floor((p*10)/modul); //social=5
+int c3 = floor((p*10)/modul); //sleeping=5
+int counterServ=c0; //service
+int counterRes=c1; //research
+int counterSoc=c2; //social 
+int counterSle=c3; //sleeping
+
+void setup() {
+  size (436, 436);
+  img = loadImage("12.2.jpg");
+  loadPixels(); 
+  img.loadPixels();
+  columns = width/w;
+  rows = height/w;
+  elevation = new int[columns][rows];
+  for (int i =0; i < columns; i++) {
+    for (int j =0; j < rows; j++) {
+      elevation[i][j] =floor(random(10, 60));
+    }
+  }
+  board = new int[columns][rows];
+  for (int i = 0; i < columns; i++) {
+    for (int j = 0; j < rows; j++) {
+      board[i][j] = 4;
+    }
+  }
+  for (int i = 0; i <100; i++) {
+    notBest[i] = new PVector(500, 0, 0);
+  }
+}
+
+void draw() {
+  background(255);
+  // transform the image into grids
+  for (int y = 0; y < height; y=y+w) {
+    for (int x = 0; x < width; x=x+w) {
+      int loc = x + y*width;
+      // red,green and blue values are equal to each other since the image is black and white
+      float r = red(img.pixels[loc]);
+      // c is the new color, not important
+      if (y>=w)
+      {
+        if (y<=436-w)
+        {
+          if (x>=w)
+          {
+            if (x<=436-w)
+            {
+              for (int i = x-w; i < x+w; i++) {
+                for (int j = y-w; j < y+w; j++) {
+                  int loc2 = i + j*width;
+                  pixels[loc2] = color(r, r, r);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  updatePixels();
+
+  int[] firstModule = new int[4] ; 
+  board[x][y]=0; 
+
+  //taking the elevation from image
+  int eleMapped[][] = new int[columns][rows];
+  for (int i =0; i < columns; i++) {
+    for (int j =0; j < rows; j++) {    
+      int loc2= i*w+ y*w;
+      eleMapped [i][j]= floor(red(img.pixels[loc2]));
+    }
+  }
+  for (int s=1; s<20; s++ ) {
+    if ( x-1>=0 && board[x-1][y]!=0) {
+      firstModule[0] = abs (elevation[x][y] - elevation[x-1][y]);
+    } else {
+      firstModule[0]=500;
+    }
+    if (x+1<=columns-2 && board[x+1][y]!=0) {
+      firstModule[1] = abs (elevation[x][y] - elevation[x+1][y]);
+    } else {
+      firstModule[1]=500;
+    }
+    if (y-1>=0 && board[x][y-1]!=0) {
+      firstModule[2] = abs (elevation[x][y] - elevation[x][y-1]);
+    } else {
+      firstModule[2]=500;
+    }
+    if (y+1<=rows-2 && board[x][y+1]!=0) {
+      firstModule[3] = abs (elevation[x][y] - elevation[x][y+1]);
+    } else {
+      firstModule[3]=500;
+    }
+    int[] Xler = new int[4] ; 
+    Xler[0] = (x-1);
+    Xler[1] = (x+1) ; 
+    Xler[2] = (x); 
+    Xler[3] = x;
+    int[] Yler = new int[4] ; 
+    Yler[0] = y;
+    Yler[1] = y ; 
+    Yler[2] = (y-1) ; 
+    Yler[3] = (y+1) ;
+    noLoop();
+    int best = 500;
+    int bestX =0;
+    int bestY= 0;
+    for (int i=0; i <firstModule.length; i++) { 
+      if (firstModule[i]<=best) {
+        best= firstModule[i];
+        bestX= Xler[i];
+        bestY= Yler[i];
+        x=bestX;
+        y=bestY;
+      } else { 
+        notBest[i+s*4] = new PVector(firstModule[i], Xler[i], Yler[i]); 
+        // println(notBest[i+s*4]);
+      }
+    }
+    board[x][y]=0;
+  }
+
+  PVector temp = new PVector (0, 0, 0); 
+  PVector temp2 = new PVector (0, 0, 0); 
+  for (int n=0; n< 99; n++) {
+    for (int m=0; m< 100; m++) {
+      PVector g=  notBest[n];
+      PVector g2= notBest[m];
+      //println(" n=" + g);
+      //println(notBest[n+2]);
+      if (g.x<=g2.x) {
+        temp = g;
+        temp2= g2;
+        //println("temp=" + temp);
+        g = temp2;
+        g2 = temp;
+        notBest[n]= g;
+        notBest[m]=g2;
+        //println(" nnew=" + g);
+      }
+    }
+  }  
+  // println(notBest);
+
+  for (int i=0; i <100; i++) { 
+    println("other" + notBest[i]);
+  }
+  ;
+  //bizim yeşil kareler
+  for ( int i = 0; i < columns; i++) {
+    for ( int j = 0; j < rows; j++) {
+      if (board[i][j] != 4)
+      {
+        fill (0, 255, board[i][j]); 
+        stroke(0);
+        rect( i*w, j*w, w, w);
+      }
+    }
+  }
+}
